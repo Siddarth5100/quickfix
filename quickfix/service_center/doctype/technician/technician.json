@@ -71,7 +71,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "User",
+   "options": "Technician",
    "set_only_once": 1
   },
   {
@@ -84,6 +84,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.status==\"On Leave\"",
    "fieldname": "section_break_lvot",
    "fieldtype": "Section Break"
   }
@@ -91,7 +92,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-25 19:13:43.620520",
+ "modified": "2026-02-26 16:09:09.164927",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Technician",
