@@ -5,6 +5,12 @@ app_description = "Service Management system for mobile and laptop repair buisne
 app_email = "siddarth@gmail.com"
 app_license = "mit"
 
+fixtures = [
+    {
+        "doctype": "Device Type"
+    }
+]
+
 # Apps
 # ------------------
 
