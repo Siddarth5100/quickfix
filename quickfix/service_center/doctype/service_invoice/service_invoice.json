@@ -12,7 +12,8 @@
   "labour_charge",
   "parts_total",
   "total_amount",
-  "payment_status"
+  "payment_status",
+  "amended_from"
  ],
  "fields": [
   {
@@ -59,12 +60,23 @@
    "in_list_view": 1,
    "label": "Payment Status",
    "options": "Unpaid\npaid"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Service Invoice",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-02-26 20:55:31.981289",
+ "modified": "2026-02-27 12:27:28.424772",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Service Invoice",
@@ -81,6 +93,25 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "print": 1,
+   "read": 1,
+   "role": "QF Service Staff"
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "QF Manager",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

@@ -11,6 +11,23 @@ fixtures = [
     }
 ]
 
+fixtures = [
+    
+    {
+        "dt": "Role",
+        "filters": [
+            ["name", "in", ["QF Service Staff", "QF Technician", "QF Manager"]]
+        ]
+    },
+
+    {
+        "dt": "Custom DocPerm",
+        "filters": [
+            ["role", "in", ["QF Service Staff", "QF Technician", "QF Manager"]]
+        ]
+    }
+]
+
 # Apps
 # ------------------
 
