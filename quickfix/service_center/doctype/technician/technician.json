@@ -64,7 +64,7 @@
   },
   {
    "fieldname": "joinning_date",
-   "fieldtype": "Datetime",
+   "fieldtype": "Date",
    "label": "Joinning Date"
   },
   {
