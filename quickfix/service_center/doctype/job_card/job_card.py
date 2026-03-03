@@ -23,6 +23,5 @@ class JobCard(Document):
 				frappe.throw("Enter only number")
 
 		if self.status == "In Repair":
-			print("----------Yes")
-		else:
-			print("-------status", self.status, type(self.status))
+			if not self.assigned_technician:
+				frappe.throw("Technician must exist")
