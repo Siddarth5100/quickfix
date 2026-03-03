@@ -6,4 +6,5 @@ from frappe.model.document import Document
 
 
 class PartUsageEntry(Document):
-	pass
+	def validate(self):
+		pass
