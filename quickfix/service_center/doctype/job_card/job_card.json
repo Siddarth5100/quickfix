@@ -127,8 +127,9 @@
   },
   {
    "fieldname": "parts_used",
-   "fieldtype": "Data",
-   "label": "Parts Used"
+   "fieldtype": "Table",
+   "label": "Parts Used",
+   "options": "Part Usage Entry"
   },
   {
    "fieldname": "financials_and_delivery_section",
@@ -194,7 +195,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-02-27 12:08:53.406645",
+ "modified": "2026-03-02 23:30:13.136268",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Job Card",
