@@ -24,7 +24,7 @@
    "reqd": 1
   },
   {
-   "default": "5000",
+   "default": "500",
    "fieldname": "default_labour_charge",
    "fieldtype": "Currency",
    "label": "Default Labour Charge"
@@ -40,7 +40,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-26 14:33:27.516687",
+ "modified": "2026-03-02 23:27:28.234441",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Settings",
