@@ -41,3 +41,29 @@ class JobCard(Document):
 		
 		self.final_amount = self.parts_total + self.labour_charge
 	
+	def before_submit(self):
+		# Only allow if status == "Ready for Delivery"
+		if self.status != "Ready For Delivery":
+			frappe.throw("Product status is not ready for delivery")
+
+		# For each part in parts_used: check stock_qty >= quantity using frappe.db.get_value.
+		# Throw a clear per-part error if not.		
+		for each_part in self.parts_used:
+			print("-----------stock", each_part.part, each_part.part_name, each_part.quantity, each_part.total_price)
+			
+			check_stock_qty = frappe.db.get_value(
+				'Spare Part', 
+				each_part.part, 
+				'stock_qty')
+
+			print("------stck_qty-------", check_stock_qty)
+			if check_stock_qty < each_part.quantity:
+				frappe.throw(
+					f"Not enough stock for {each_part.part}. "
+					f"Availble: {check_stock_qty}, Required: {each_part.quantity}"
+				)
+
+	def on_cancel(self):
+		# Set status = "Cancelled"
+		self.status = "Cancelled"
+		
