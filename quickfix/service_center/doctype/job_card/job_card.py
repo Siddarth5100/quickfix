@@ -49,21 +49,88 @@ class JobCard(Document):
 		# For each part in parts_used: check stock_qty >= quantity using frappe.db.get_value.
 		# Throw a clear per-part error if not.		
 		for each_part in self.parts_used:
-			print("-----------stock", each_part.part, each_part.part_name, each_part.quantity, each_part.total_price)
+			# print("-----------stock", each_part.part, each_part.part_name, each_part.quantity, each_part.total_price)
 			
 			check_stock_qty = frappe.db.get_value(
 				'Spare Part', 
 				each_part.part, 
 				'stock_qty')
 
-			print("------stck_qty-------", check_stock_qty)
+			# print("------stck_qty-------", check_stock_qty)
 			if check_stock_qty < each_part.quantity:
 				frappe.throw(
 					f"Not enough stock for {each_part.part}. "
 					f"Availble: {check_stock_qty}, Required: {each_part.quantity}"
 				)
+	def on_submit(self):
+		# deduct stck qty for each part
+		# if self.docstatus == 1:
+		for qty in self.parts_used:
+			
+			avail_stock_qty = frappe.get_value(
+				'Spare Part',
+				qty.part,
+				'stock_qty'
+			)
+		
+			updated_stck = avail_stock_qty - qty.quantity
+
+			frappe.db.set_value(
+				'Spare Part',
+				qty.part,
+				'stock_qty',
+				updated_stck,
+			)
+
+		# auto create service invoice
+		frappe.get_doc({
+			'doctype': 'Service Invoice',
+			'job_card': self.name,
+			'customer_name': self.customer_name,
+			'labour_charge': self.labour_charge,
+			'parts_total': self.parts_total,
+			'total_amount': self.final_amount,
+			'payment_status': "Unpaid"
+		}).insert(ignore_permissions= True)
+		# print("-----------test",doc, doc.job_card, doc.customer_name, doc.labour_charge)
+
+	"""
+		# frappe.publish_realtime()
+		frappe.publish_realtime(
+			"job_ready",
+			{
+				"job_card": self.name,
+				"message": "Job is working" 
+			},
+			user = self.owner
+		)
+	"""
+	# Enqueue send_job_ready_email using frappe.enqueue - do NOT block the submit
+	# with a synchronous email send
+	
+	
+	def send_job_ready_email(job_card_name):
+		print("--------name", job_card_name)
+		job_card = frappe.get_doc(
+			'Job Card',
+			job_card_name
+		)
+		
+		print("-----get_---", job_card, job_card.device_type)
+
+	frappe.enqueue(
+		method= send_job_ready_email,
+		queue= "short"
+	)
+
 
 	def on_cancel(self):
 		# Set status = "Cancelled"
 		self.status = "Cancelled"
+
 		
+		
+	def on_trash(self):
+
+		if self.status not in ["Cancelled", "Draft"]:
+			frappe.throw(f"Status in {self.status}, can't delete ")
