@@ -109,19 +109,19 @@ class JobCard(Document):
 	# with a synchronous email send
 	
 	
-	def send_job_ready_email(job_card_name):
-		print("--------name", job_card_name)
-		job_card = frappe.get_doc(
-			'Job Card',
-			job_card_name
-		)
+	# def send_job_ready_email(job_card_name):
+	# 	print("--------name", job_card_name)
+	# 	job_card = frappe.get_doc(
+	# 		'Job Card',
+	# 		job_card_name
+	# 	)
 		
-		print("-----get_---", job_card, job_card.device_type)
+	# 	print("-----get_---", job_card, job_card.device_type)
 
-	frappe.enqueue(
-		method= send_job_ready_email,
-		queue= "short"
-	)
+	# frappe.enqueue(
+	# 	method= send_job_ready_email,
+	# 	queue= "short"
+	# )
 
 
 	def on_cancel(self):
