@@ -41,6 +41,10 @@ class JobCard(Document):
 		
 		self.final_amount = self.parts_total + self.labour_charge
 	
+		# explore
+		if not self.customer_email:
+			frappe.throw("Enter Mail-id")
+			
 	def before_submit(self):
 		# Only allow if status == "Ready for Delivery"
 		if self.status != "Ready For Delivery":
