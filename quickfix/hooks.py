@@ -156,6 +156,10 @@ fixtures = [
 # 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
 
+override_doctype_class = {
+	"Job Card": "quickfix.overrides.custom_job_card.CustomJobCard"
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events
@@ -167,6 +171,15 @@ fixtures = [
 # 		"on_trash": "method"
 # 	}
 # }
+
+
+doc_events = {
+	"*": {
+		"on_update": " quickfix.service_center.doctype.audit_log.audit_log",
+		"on_cancel": "method",
+		"on_trash": "method"
+	}
+}
 
 # Scheduled Tasks
 # ---------------

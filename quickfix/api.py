@@ -12,3 +12,18 @@ def share_job_card(job_card_name, user_email):
     )
 
     return "shared successfully"
+
+# In a utility function, call frappe.rename_doc("Technician", old_name, new_name,
+# merge=False)
+@frappe.whitelist()
+def rename_technician(old_name, new_name):
+    frappe.rename_doc(
+        'Technician',
+        old_name,
+        new_name,
+        merge= False        
+    )
+    
+    frappe.db.commit()
+    
+    return {"status": f"Rename done from {old_name} to {new_name}"}
