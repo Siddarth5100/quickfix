@@ -172,6 +172,15 @@ override_doctype_class = {
 # 	}
 # }
 
+
+doc_events = {
+	"*": {
+		"on_update": " quickfix.service_center.doctype.audit_log.audit_log",
+		"on_cancel": "method",
+		"on_trash": "method"
+	}
+}
+
 # Scheduled Tasks
 # ---------------
 
