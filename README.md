@@ -31,3 +31,41 @@ Pre-commit is configured to use the following tools for checking and formatting 
 ### License
 
 mit
+### -------------------------------QuickFix-------------------------------
+### Multi-site & Configuration
+
+### Que: 
+Explain in 4 sentences: what each config file is for and what breaks if you accidentally put a secret in common_site_config.json
+
+### Ans:
+
+### site_config.json : 
+- Site level configuration
+- Works only for that particular site
+- It contains values like db name, pwd, type, key
+- Exist in sites folder -> specific site folder
+
+### common_site_config.json :
+- Global (bench level) configuration
+- Works for all site in the bench
+- If something want to use commonly can mention here, not required to mention separately for each site
+- Anything is placed here will affect all the sites as it is shared one
+- It contails reidis config, global settings, bg services etc
+- Exist inside sites folder
+
+- As common_site_config is common, if serect key adds here all the other sites gets access easily which is not secure way
+
+
+### Que:
+4 processes bench start launches (web, worker, scheduler,
+socketio) and explain what happens to background jobs if the worker process
+crashes.
+
+### Ans:
+- redis_cache
+- redis_queue
+- web
+- watch
+- socketio
+
+- If Worker gets crashed jobs will get queued when the worker resumes backgroud job will gets started
