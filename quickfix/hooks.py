@@ -172,12 +172,11 @@ override_doctype_class = {
 # 	}
 # }
 
-
 doc_events = {
 	"*": {
-		"on_update": " quickfix.service_center.doctype.audit_log.audit_log",
-		"on_cancel": "method",
-		"on_trash": "method"
+		"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+        "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+        "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
 	}
 }
 
