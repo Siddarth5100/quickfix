@@ -138,3 +138,20 @@ class JobCard(Document):
 
 		if self.status not in ["Cancelled", "Draft"]:
 			frappe.throw(f"Status in {self.status}, can't delete ")
+
+
+def controller_test(doc, method):
+	print("Hook validate triggered")
+	print(doc.name, method)
+	frappe.throw("Controller  Validation error")
+
+print("Test print from controller, outside class through hooks")
+
+# to test task b 2nd que
+'''
+def wildcard_validate(doc, method):
+	print("Wildcard validate:", doc.doctype)
+
+def jobcard_validate(doc, method):
+	print("Specific job card validate:", doc.name)
+'''
