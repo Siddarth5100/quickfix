@@ -7,6 +7,9 @@ from frappe.model.document import Document
 
 class JobCard(Document):
 	def validate(self):
+		print("VALIDATE RUNNING")
+		print("controller validate running")
+
 		# Validate customer_phone is exactly 10 digits
 		if len(self.customer_phone) > 10:
 			frappe.throw("customer number must be exactly 10 digits")
@@ -42,9 +45,9 @@ class JobCard(Document):
 		self.final_amount = self.parts_total + self.labour_charge
 	
 		# explore
-		if not self.customer_email:
+		if not self.customer_email or not self.customer_email.strip():
 			frappe.throw("Enter Mail-id")
-			
+
 	def before_submit(self):
 		# Only allow if status == "Ready for Delivery"
 		if self.status != "Ready For Delivery":
@@ -149,9 +152,9 @@ print("Test print from controller, outside class through hooks")
 
 # to test task b 2nd que
 '''
+
 def wildcard_validate(doc, method):
 	print("Wildcard validate:", doc.doctype)
 
 def jobcard_validate(doc, method):
 	print("Specific job card validate:", doc.name)
-'''

@@ -3,7 +3,7 @@ from quickfix.service_center.doctype.job_card.job_card import JobCard
 
 class CustomJobCard(JobCard):
     def validate(self):
-        # super().validate()
+        super().validate()
         print("Custom Validation")
         self._check_urgent_unassigned()
         

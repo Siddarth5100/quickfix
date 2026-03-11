@@ -179,7 +179,19 @@ doc_events = {
 		"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
         "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
         "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
-	}
+	},
+
+    "Job Card": {
+        "validate": "quickfix.service_center.doctype.job_card.job_card.controller_test"
+    },
+
+    "*": {
+        "validate": "quickfix.service_center.doctype.job_card.job_card.wildcard_validate"
+    },
+
+    "Job Card": {
+        "validate": "quickfix.service_center.doctype.job_card.job_card.jobcard_validate"
+    }
 }
 
 # Scheduled Tasks
