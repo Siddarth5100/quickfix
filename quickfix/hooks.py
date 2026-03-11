@@ -107,11 +107,13 @@ fixtures = [
 
 # before_install = "quickfix.install.before_install"
 # after_install = "quickfix.install.after_install"
+after_install = "quickfix.service_center.doctype.device_type.device_type.after_install"
 
 # Uninstallation
 # ------------
 
 # before_uninstall = "quickfix.uninstall.before_uninstall"
+before_uninstall = "quickfix.service_center.doctype.job_card.job_card.before_uninstall"
 # after_uninstall = "quickfix.uninstall.after_uninstall"
 
 # Integration Setup

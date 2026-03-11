@@ -151,6 +151,7 @@ def controller_test(doc, method):
 print("Test print from controller, outside class through hooks")
 
 # to test task b 2nd que
+'''
 
 def wildcard_validate(doc, method):
 	print("Wildcard validate:", doc.doctype)
