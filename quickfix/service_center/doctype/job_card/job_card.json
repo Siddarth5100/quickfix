@@ -152,6 +152,7 @@
   {
    "fieldname": "final_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Final Amount",
    "read_only": 1
   },
@@ -178,8 +179,10 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_preview": 1,
    "label": "Status",
-   "options": "Draft\nPending\nDiagnosis\nAwaiting Customer approval\nIn Repair\nReady For Delivery\nDelivered\nCancelled"
+   "options": "Draft\nPending\nDiagnosis\nAwaiting Customer approval\nIn Repair\nReady For Delivery\nDelivered\nCancelled",
+   "search_index": 1
   },
   {
    "fieldname": "amended_from",
@@ -196,7 +199,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-03 13:08:19.125813",
+ "modified": "2026-03-11 16:53:53.403747",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Job Card",
