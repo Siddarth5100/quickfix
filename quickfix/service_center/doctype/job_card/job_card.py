@@ -20,7 +20,7 @@ class JobCard(Document):
 				frappe.throw("Enter only number")
 
 		# If status is "In Repair" or beyond, assigned_technician must exist
-		if self.status == "In Repair":
+		if self.status in ["In Repair", "Ready For Delivery", "Delivered"]:
 			if not self.assigned_technician:
 				frappe.throw("Technician must exist")
 
@@ -50,7 +50,7 @@ class JobCard(Document):
 
 	def before_submit(self):
 		# Only allow if status == "Ready for Delivery"
-		if self.status != "Ready For Delivery":
+		if not self.status == "Ready For Delivery":
 			frappe.throw("Product status is not ready for delivery")
 
 		# For each part in parts_used: check stock_qty >= quantity using frappe.db.get_value.
@@ -69,6 +69,7 @@ class JobCard(Document):
 					f"Not enough stock for {each_part.part}. "
 					f"Availble: {check_stock_qty}, Required: {each_part.quantity}"
 				)
+				
 	def on_submit(self):
 		# deduct stck qty for each part
 		# if self.docstatus == 1:
@@ -135,7 +136,7 @@ class JobCard(Document):
 		# Set status = "Cancelled"
 		self.status = "Cancelled"
 
-		
+		#  restore stock
 		
 	def on_trash(self):
 
