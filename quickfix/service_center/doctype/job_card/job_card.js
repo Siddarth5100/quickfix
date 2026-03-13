@@ -30,17 +30,48 @@ frappe.ui.form.on("Job Card", {
         // indicator logic : Add color-coded frm.dashboard.add_indicator based on status
         if (frm.doc.status == "Ready For Delivery") {
             frm.dashboard.add_indicator("Ready for Delivery", "yellow")
-    }
+        }
 
-        // buuton : Show "Mark as Delivered" button only when status=="Ready for Delivery" AND docstatus==1
+        // button : Show "Mark as Delivered" button only when status=="Ready for Delivery" AND docstatus==1
         if (frm.doc.status == "Ready For Delivery" && frm.doc.docstatus == 1) {
             frm.add_custom_button("Mark as Delivered")
         }
 
-        let  shop = frappe.boot.user
-        // console.log("-----------shop name", shop)
-        frm.set_intro(shop)
-    },
+// want to re-do this
+        // let  shop = frappe.boot.user
+        // // console.log("-----------shop name", shop)
+        // frm.set_intro(shop)
+
+        // h2 task 
+        frm.add_custom_button("Reject Job", function() {
+
+            let d = new frappe.ui.Dialog({
+            title: "Reject Job",
+            fields: [
+                {
+                    label: "Rejection Reason",
+                    fieldname: "reason",
+                    fieldtype: "Small Text",
+                    reqd: 1
+                }
+            ]
+        })
+        d.show();    
+    });
+        console.log("-------Rejected")
+        frm.add_custom_button("Transfer Technician", function() {
+            frappe.prompt(
+                [
+                    {
+                        label: "New Technician",
+                        fieldname: "technician",
+                        fieldtype: "Link",
+                        options: "Technician"
+                    }
+                ]
+            )
+        });
+},
 
     onload(frm) {
         frappe.realtime.on("job_ready", () => {
