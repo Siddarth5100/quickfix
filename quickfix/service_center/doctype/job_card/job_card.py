@@ -10,6 +10,26 @@ class JobCard(Document):
 		print("VALIDATE RUNNING")
 		print("controller validate running")
 
+		'''
+		Dangerous patterns: TWO bugs related to document lifecycle
+		'''
+		# bug 1
+		'''
+		self.parts_total = sum(r.total_price for r in self.parts_used)
+		print(self.parts_used)
+		self.save()
+		'''
+
+		#  bug 2
+		'''
+		for part in self.parts_used:
+			other = frappe.get_doc("Spare Part", part.part)
+			print("1---------bug fix: other", other)
+			other.stock_qty -= part.quantity
+			other.save()
+		frappe.throw("Inconsistent error")
+		'''
+
 		# Validate customer_phone is exactly 10 digits
 		if len(self.customer_phone) > 10:
 			frappe.throw("customer number must be exactly 10 digits")
@@ -50,7 +70,7 @@ class JobCard(Document):
 
 	def before_submit(self):
 		# Only allow if status == "Ready for Delivery"
-		if not self.status == "Ready For Delivery":
+		if self.status != "Ready For Delivery":
 			frappe.throw("Product status is not ready for delivery")
 
 		# For each part in parts_used: check stock_qty >= quantity using frappe.db.get_value.
@@ -102,34 +122,43 @@ class JobCard(Document):
 		}).insert(ignore_permissions= True)
 		# print("-----------test",doc, doc.job_card, doc.customer_name, doc.labour_charge)
 
-	"""
+	
+		# print("publish realtime -------------")
 		# frappe.publish_realtime()
 		frappe.publish_realtime(
 			"job_ready",
 			{
 				"job_card": self.name,
-				"message": "Job is working" 
+				"message": f"Job card {self.name} is ready!" 
 			},
 			user = self.owner
 		)
-	"""
-	# Enqueue send_job_ready_email using frappe.enqueue - do NOT block the submit
-	# with a synchronous email send
+		# print(f"realtime is published to owner", self.owner)
+	'''
+	Enqueue send_job_ready_email using frappe.enqueue - do NOT block the submit
+	with a synchronous email send
+	'''
 	
-	
-	# def send_job_ready_email(job_card_name):
-	# 	print("--------name", job_card_name)
-	# 	job_card = frappe.get_doc(
-	# 		'Job Card',
-	# 		job_card_name
-	# 	)
+	def send_job_ready_email(job_card_name):
+		print("--------name", job_card_name)
+		job_card = frappe.get_doc(
+			'Job Card',
+			job_card_name
+		)
 		
-	# 	print("-----get_---", job_card, job_card.device_type)
+		print("-----get_---", job_card, job_card.device_type)
 
-	# frappe.enqueue(
-	# 	method= send_job_ready_email,
-	# 	queue= "short"
-	# )
+		frappe.sendmail(
+			recepients = job_card.customer_email,
+			subject= f"Your Job Card {job_card.name} is ready",
+			message = f"Hello {job_card.customer_name}, Your device is ready"
+		)
+
+		print("Email sent ----------------")
+	frappe.enqueue(
+		method= "quickfix.service_center.doctype.job_card.job_card.send_job_ready_email",
+		queue= "short"
+	)
 
 
 	def on_cancel(self):
@@ -137,25 +166,55 @@ class JobCard(Document):
 		self.status = "Cancelled"
 
 		#  restore stock
+		for part in self.parts_used:
+			print("----parrt", part.part)
+			current_qty = frappe.db.get_value(
+				"Spare Part", 
+				part.part, 
+				"stock_qty"
+			)
+			print("------crntqty--", current_qty, "part quan", part.quantity)
+
+			frappe.db.set_value(
+				"Spare Part",
+				part.part,
+				"stock_qty",
+				current_qty + part.quantity
+			)
+
+		# cancel service invoice
+		service_invoice = frappe.get_value(
+			"Service Invoice",
+			{"job_card": self.name},
+		)
 		
+		print("-----------si", service_invoice)
+		if service_invoice:
+			invoice = frappe.get_doc("Service Invoice", service_invoice)
+			
+			if invoice.docstatus == 1:
+				invoice.cancel()
+			else:
+				print(f"Invoice {invoice.name}")
+
 	def on_trash(self):
 
 		if self.status not in ["Cancelled", "Draft"]:
 			frappe.throw(f"Status in {self.status}, can't delete ")
 
 
-def controller_test(doc, method):
-	print("Hook validate triggered")
-	print(doc.name, method)
-	frappe.throw("Controller  Validation error")
+# def controller_test(doc, method):
+# 	print("Hook validate triggered")
+# 	print(doc.name, method)
+# 	frappe.throw("Controller  Validation error")
 
-print("Test print from controller, outside class through hooks")
+# print("Test print from controller, outside class through hooks")
 
-# to test task b 2nd que
+# # to test task b 2nd que
 
 
-def wildcard_validate(doc, method):
-	print("Wildcard validate:", doc.doctype)
+# def wildcard_validate(doc, method):
+# 	print("Wildcard validate:", doc.doctype)
 
-def jobcard_validate(doc, method):
-	print("Specific job card validate:", doc.name)
+# def jobcard_validate(doc, method):
+# 	print("Specific job card validate:", doc.name)

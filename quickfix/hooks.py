@@ -6,25 +6,23 @@ app_email = "siddarth@gmail.com"
 app_license = "mit"
 
 fixtures = [
+    
+    # Pre-populate 3 records via fixtures: Smartphone, Laptop, Tablet
     {
         "doctype": "Device Type"
-    }
-]
+    },
 
-fixtures = [
-    
+    # Export this permission setup as fixtures (Role + DocType permission records)
     {
-        "dt": "Role",
+        "doctype": "Role",
         "filters": [
             ["name", "in", ["QF Service Staff", "QF Technician", "QF Manager"]]
         ]
     },
 
     {
-        "dt": "Custom DocPerm",
-        "filters": [
-            ["role", "in", ["QF Service Staff", "QF Technician", "QF Manager"]]
-        ]
+        "doctype": "Custom DocPerm",
+
     }
 ]
 
@@ -50,6 +48,17 @@ fixtures = [
 # include js, css files in header of desk.html
 # app_include_css = "/assets/quickfix/css/quickfix.css"
 # app_include_js = "/assets/quickfix/js/quickfix.js"
+
+
+# include js, css files in header of desk.html
+app_include_css = "/assets/quickfix/css/quickfix.css"
+app_include_js = "/assets/quickfix/js/quickfix.js"
+doctype_js = {
+    "Job Card": "public/js/job_card"
+}
+docty_list_js = {
+    "Job Card": "public/js/job_card_list.js"
+}
 
 # include js, css files in header of web template
 # web_include_css = "/assets/quickfix/css/quickfix.css"
@@ -101,6 +110,17 @@ fixtures = [
 # 	"methods": "quickfix.utils.jinja_methods",
 # 	"filters": "quickfix.utils.jinja_filters"
 # }
+
+def get_weather():
+    return "Hello"
+
+def get_filters(text):
+    return text.upper()
+
+jinja = {
+	"methods": "quickfix.hooks.get_weather",
+    "filters": "quickfix.hooks.get_filters"
+}
 
 # Installation
 # ------------
@@ -174,25 +194,29 @@ override_doctype_class = {
 # 	}
 # }
 
-doc_events = {
-	"*": {
-		"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
-        "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
-        "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
-	},
 
-    "Job Card": {
-        "validate": "quickfix.service_center.doctype.job_card.job_card.controller_test"
-    },
 
-    "*": {
-        "validate": "quickfix.service_center.doctype.job_card.job_card.wildcard_validate"
-    },
+# doc_events = {
+	# "*": {
+	# 	"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+    #     "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+    #     "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
+	# },
 
-    "Job Card": {
-        "validate": "quickfix.service_center.doctype.job_card.job_card.jobcard_validate"
-    }
-}
+    # "Job Card": {
+        # "validate": "quickfix.service_center.doctype.job_card.job_card.controller_test"
+    # },
+
+    # "*": {
+    #     "validate": "quickfix.service_center.doctype.job_card.job_card.wildcard_validate"
+    # },
+
+    # "Job Card": {
+    #     "validate": "quickfix.service_center.doctype.job_card.job_card.jobcard_validate"
+    # }
+# }
+
+
 
 # Scheduled Tasks
 # ---------------
@@ -296,3 +320,9 @@ doc_events = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+
+website_route_rules = [
+	{"from_route": "/sid", "to_route": ""},
+
+]

@@ -69,3 +69,25 @@ crashes.
 - socketio
 
 - If Worker gets crashed jobs will get queued when the worker resumes backgroud job will gets started
+
+### B2 - ORM Internals & Query Builder
+
+### Que: Run: frappe.db.sql("SHOW TABLES LIKE '%Job%'") and list what you see. Explain the tab prefix convention.
+
+### Ans: 
+tables in db,
+(('tabJob Card',), ('tabScheduled Job Log',), ('tabScheduled Job Type',))
+
+tab prefix refers to Table in db(eg: Table + Doctype = tabJob Card) 
+
+### Que: Run: frappe.db.sql("DESCRIBE `tabJob Card`", as_dict=True) and list 5 column names you recognise from your DocType fields.
+
+### Ans:
+
+1 customer_name
+2 device_brand
+3 name
+4 docstatus
+5 remarks
+
+
