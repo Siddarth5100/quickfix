@@ -2,8 +2,15 @@
 // For license information, please see license.txt
 console.log("JobCard JS loaded")
 
+frappe.realtime.on("job_ready", (data) => {
+    console.log("Realtime event received:", data);
+    frappe.show_alert({
+        message: data.message,
+        indicator: "green"
+    });
+});
+
 frappe.ui.form.on("Job Card", {
-	
     setup(frm) {
         frm.set_query("assigned_technician", function () {
             return {
