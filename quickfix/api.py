@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import now_datetime
 
 # whitelisted method to share the read access permission to specifix user
 @frappe.whitelist()
@@ -118,3 +119,48 @@ def transfer_job(from_tech, to_tech):
         frappe.db.rollback()
         frappe.log_error(frappe.get_traceback(), "Job Transfer failed")
         raise
+
+@frappe.whitelist()
+def get_job_summary(job_card_name):
+    
+    args = frappe.form_dict
+    print(args)
+    
+    return {
+    	"customer_name": args.get("customer_name")
+     }
+
+
+# F4 - override_whitelisted_methods Hook
+@frappe.whitelist()
+def custom_get_count(doctype, filters=None, debug=False, cache=False):
+    print("doctype:--", doctype)
+    frappe.get_doc({
+        "doctype": "Audit Log",
+        "doctype_name": doctype,
+        "action": "count_queried",
+        "user": frappe.session.user,
+        "timestamp": now_datetime()
+    }).insert(ignore_permissions=True)
+
+    from frappe.client import get_count
+    return get_count(doctype, filters, debug, cache)
+
+
+@frappe.whitelist()
+def get_job_summary():
+    
+    args = frappe.form_dict
+    print(args)
+    job_card_name = args.get("name")
+    customer_name = args.get("customer_name")
+
+    return {
+    	"job_card": job_card_name,
+        "customer_name": customer_name
+     }
+
+# bar chart
+@frappe.whitelist()
+def get_status_chart_data():
+    pass

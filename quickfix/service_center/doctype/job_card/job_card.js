@@ -2,14 +2,7 @@
 // For license information, please see license.txt
 console.log("JobCard JS loaded")
 
-frappe.realtime.on("job_ready", (data) => {
-    console.log("Realtime event received:", data);
-    frappe.show_alert({
-        message: data.message,
-        indicator: "green"
-    });
-});
-
+// H1 Setup handler:
 frappe.ui.form.on("Job Card", {
     setup(frm) {
         frm.set_query("assigned_technician", function () {
@@ -22,21 +15,40 @@ frappe.ui.form.on("Job Card", {
         })
 	},
 
-    // assigned_technician(frm) {
-    //     let tech = frm.doc.assigned_technician;
-    //     console.log("--------------tech", tech)
-    //     let device = frm.doc.device_type;
-    //     console.log("---------------device", device)
-    //     let db = frappe.db.get_value("Technician", tech, "specialization")
-    //     console.log("-------db", db)
+    assigned_technician: function(frm) {
+        let tech = frm.doc.assigned_technician;
+        // console.log("--------------tech", tech)
+        let device = frm.doc.device_type;
+        // console.log("---------------device", device)
+        frappe.db.get_value("Technician", tech, "specialization")
+        // console.log("-------db", db)
+            .then(r => {
+                let specialization = r.message.specialization;
+                // console.log("specialization:", specialization);
 
-    // },
+                if (specialization != device) {
+                    frappe.msgprint("There is no technician, in this specialization")
+                }
+            });
+    },
 
     refresh(frm) {
 
+        // to test shipped JS
+        frappe.msgprint("From Backend")
+
+        // 
+        if (!frappe.user.has_role("Manager")) {
+            frm.set_df_property("customer_phone", "hidden", 1);
+        }
+
         // indicator logic : Add color-coded frm.dashboard.add_indicator based on status
         if (frm.doc.status == "Ready For Delivery") {
-            frm.dashboard.add_indicator("Ready for Delivery", "yellow")
+            frm.dashboard.add_indicator("Ready for Delivery", "green")
+        }
+
+        if (frm.doc.status == "Cancelled") {
+            frm.dashboard.add_indicator("Cancelled", "red")
         }
 
         // button : Show "Mark as Delivered" button only when status=="Ready for Delivery" AND docstatus==1
@@ -44,14 +56,12 @@ frappe.ui.form.on("Job Card", {
             frm.add_custom_button("Mark as Delivered")
         }
 
-// want to re-do this
-        // let  shop = frappe.boot.user
-        // // console.log("-----------shop name", shop)
-        // frm.set_intro(shop)
+        // Read frappe.boot.quickfix_shop_name and display it in the form heade
+        let shop = frappe.boot.quickfix_shop_name
+        frm.set_intro(shop)
 
-        // h2 task 
+        // h2 Dialog, Prompt, Confirm
         frm.add_custom_button("Reject Job", function() {
-
             let d = new frappe.ui.Dialog({
             title: "Reject Job",
             fields: [
@@ -61,11 +71,24 @@ frappe.ui.form.on("Job Card", {
                     fieldtype: "Small Text",
                     reqd: 1
                 }
-            ]
-        })
+            ],
+            
+            primary_action_label: "Submit",
+            primary_action(values) {
+
+                frappe.confirm("Are you sure you want to reject?",
+                    function() {
+                        frm.set_value("status", "Cancelled");
+                        frm.set_value("rejection_reason", values.reason);
+                        frm.save();
+                        d.hide();
+                    }
+                );
+            }
+        });    
         d.show();    
     });
-        console.log("-------Rejected")
+    
         frm.add_custom_button("Transfer Technician", function() {
             frappe.prompt(
                 [
@@ -73,18 +96,49 @@ frappe.ui.form.on("Job Card", {
                         label: "New Technician",
                         fieldname: "technician",
                         fieldtype: "Link",
-                        options: "Technician"
+                        options: "Technician",
+                        reqd: 1
                     }
-                ]
+                ],
+
+                // function(values) {
+                //     frappe.confirm(
+                //         'Are you sure want to transfer?',
+                //         function() {
+                            
+                //             frappe.call({
+                //                 method: "quickfix.service_center.doctype.job_card.assigned_technician",
+                //                 args: {
+                //                     technician: values.technician,
+                //                     docname: frm.doc.name
+                //                 },
+                //             callback: function(r) {
+                //                 console.log(r.message)
+                //             }
+                //         })
+                //             console.log("Clicked Yes")
+                //             frm.set_value("assigned_technician", values.technician);
+                //             frm.save();
+                //             frm.trigger("assigned_technician");
+                //         },
+                //         function() {
+                //             console.log("ITss No")
+                //         }
+                //     )
+                // }
             )
         });
-},
+    },
 
+    // Realtime: Listen for "job_ready" event in onload (not refresh) and show frappe.show_alert
     onload(frm) {
         frappe.realtime.on("job_ready", () => {
+            if (frm.doc.status == "Ready For Delivery") {
+
             frappe.show_alert({
                 message: "Job is ready",
-                indicator: "green"});
+                indicator: "red"});
+            }
         });
     }
 });

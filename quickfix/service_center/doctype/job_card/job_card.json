@@ -6,7 +6,6 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_7yyy",
   "customer_name",
   "customer_phone",
   "customer_email",
@@ -31,14 +30,10 @@
   "delivery_date",
   "remarks",
   "status",
-  "amended_from"
+  "amended_from",
+  "rejection_reason"
  ],
  "fields": [
-  {
-   "fieldname": "section_break_7yyy",
-   "fieldtype": "Section Break",
-   "label": "Customer & Device"
-  },
   {
    "fieldname": "customer_name",
    "fieldtype": "Data",
@@ -181,7 +176,7 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Status",
-   "options": "Draft\nPending\nDiagnosis\nAwaiting Customer approval\nIn Repair\nReady For Delivery\nDelivered\nCancelled"
+   "options": "Draft\nPending\nDiagnosis\nAwaiting Customer Approval\nIn Repair\nReady For Delivery\nDelivered\nCancelled"
   },
   {
    "fieldname": "amended_from",
@@ -192,13 +187,19 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.status===\"Cancelled\"",
+   "fieldname": "rejection_reason",
+   "fieldtype": "Small Text",
+   "label": "Rejection Reason"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-11 16:53:53.403747",
+ "modified": "2026-03-22 22:05:05.733998",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Job Card",

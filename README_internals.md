@@ -192,15 +192,14 @@ Task B - Multiple handler conflict:
 
 ### Que:
 Register TWO validate handlers on Job Card - one in your main controller and one in
-doc_events. In README_internals.md: in what order do they run? What happens if
-both raise a frappe.ValidationError?
+doc_events. In README_internals.md: in what order do they run? What happens if both raise a frappe.ValidationError?
 
 ### Ans:
 when saving a Job Card documnet, the validate event is triggered.
 
 Order:
 1 controller validate() method inside JobCard class runs first
-2 after controller validation completes, the hook hndler defined in hooks.py under doc_events executes
+2 after controller validation completes, the hook handler defined in hooks.py under doc_events executes
 
 ### controller validation runs before the doc_events hook validation
 
@@ -221,6 +220,7 @@ therefore, both handlers run & specific Doctype handler executes before the wild
 ----------------------------------------------------------------------------------
 ### F3 - Asset, Jinja & Website Hooks
 
+### Asset hooks:
 ### Que:
 What is the difference? When would you use each?
 
@@ -236,9 +236,158 @@ Tree view is only useful for nested/ hierarchical data, where parent child relat
 
 ## Eg: 
 Project Task with parent task and sub task
+
+### Jinja hooks:
+### Que:
+Explain: what is the difference between a Jinja context available in Print Formats vs one available in Web Pages? Are they the same?
+
+### Ans:
+----------------------------------------------------------------------------------
+### H3 - List View & Tree View
+
+# Que:
+In README_internals.md: describe what a Tree DocType is (example: Account, Employee hierarchy). What is doctype_tree_js used for and what extra fields does a tree DocType require (parent_field is_group)?
+
+### Ans:
+A tree doctype, is like a tree structure eg:(one parent => multiple children), a doctype where records are connected like parent child, used to organize the data in hierarchy
+
+Account
+   |---Employee
+
+doctype_tree_js is used for control behaviour of tree view
+used to create buttons, customize tree behaviour
+
+parent_field tells who is the parent
+
+is_group tells this node have children
+
+### H4 - Client Script DocType vs Shipped JS
+
+# Que:
+In README_internals.md: explain the tradeoffs - when would a consultant use Client Script DocType vs an app developer use shipped JS? What are the risks of Client Script DocType in production?
+
+# Ans:
+Client script: Use client script for quick change, no deploy, works instantly
+
+client script => quick but risky
+
+Shipped JS: Where we want full control, Version control using git, clean structure & safe for production
+
+Risk: stored in db not in git, anyone with the access can change it, which is haed to track changes.
+
+shipped js => cntrolled and safe
+
+# Que:
+Demonstrate the hiding fields vs permission security pitfall: add a JS field hide that hides customer_phone for non-managers - then show that an API call can still retrieve the field. Explain why hiding in JS is not a security measure.
+
+# Ans:
+frappe.ui.form.on("Job Card), {
+    refresh(frm) {
+        if (!frappe.user.has_role("Manager")) {
+            frm.set_df_property("customer_phone", "hidden", 1);
+        }
+    }
+}
+
+customer_phonr field will gets disabled in UI, but when we
+
+test in browser console or post man(will get the data):
+cur_frm.doc.customer_phone
+
+here js only hides in UI, but data exists. Hiding in JS is not a security measure as the data can still access via API/console
+----------------------------------------------------------------------------------
+### I1 - Query Report with SQL Safety
+
+### Que:
+Demonstrate and explain the issues and solutions with respect to f-string SQL and the parameterized pattern.
+
+### Ans:
+f-string: user inputs goes directly into query, where hackers can inject and hack the DB fully, where leads to data loss
+
+where parameterized eg: WHERE device_type = %(device_type)s
+(escape +sanitize input) input treated as data not sql
+
+### Que:
+Add a EXPLAIN statement in bench console for your query - screenshot the result and identify if an index is being used on the status column
+
+### Ans:
+before changing in json file
+
+json file:
+{
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Status",
+   "options": "Draft\nPending\nDiagnosis\nAwaiting Customer Approval\nIn Repair\nReady For Delivery\nDelivered\nCancelled"
+  },
+
+bench console:
+In [2]: frappe.db.sql("""
+   ...: EXPLAIN SELECT name, customer_name, device_type, status, assigned_technician, estimate
+   ...: d_cost, creation
+   ...: FROM `tabJob Card`
+   ...: WHERE status NOT IN ("Delivered", "Cancelled") """
+   ...: , as_dict=True)
+
+bench console:
+Out[2]: 
+[{'id': 1,
+  'select_type': 'SIMPLE',
+  'table': 'tabJob Card',
+  'type': 'ALL',
+  'possible_keys': None,
+  'key': None,
+  'key_len': None,
+  'ref': None,
+  'rows': '54',
+  'Extra': 'Using where'}]
+
+cmd to change in bench console:
+
+frappe.db.sql("SHOW INDEX FROM `tabJob Card`", as_dict=True)
+
+after changing in json
+
+bench console:
+In [6]: frappe.db.sql("""
+   ...: EXPLAIN SELECT name, customer_name, device_type, status, assigned_technician, estimate
+   ...: d_cost, creation
+   ...: FROM `tabJob Card`
+   ...: WHERE status NOT IN ("Delivered", "Cancelled") """
+   ...: , as_dict=True)
+
+bench console:
+Out[6]: 
+
+[{'id': 1,
+  'select_type': 'SIMPLE',
+  'table': 'tabJob Card',
+  'type': 'ALL',
+  'possible_keys': 'status_index',
+  'key': None,
+  'key_len': None,
+  'ref': None,
+  'rows': '54',
+  'Extra': 'Using where'}]
+
+Index is used for better query performance
+
+### Que:
+In README_internals.md: when is Report Builder appropriate? When must you use Script Report? Describe a scenario where using Report Builder in production would be a mistake.
+
+### Ans:
+When we want simple reports, where no logic needed, just show data
+we can use the report builder
+
+when logic required we should use the script report, where we have the more things to do using this
+
+Report builder is a mistake in production, when report needs logic, calculations or strict control and it can't handle complex logic and becomes hard to maintain. here we can go with Script report
 ----------------------------------------------------------------------------------
 ### K1 - Background Jobs
 
+### Task A - Queue names:
 ### Que:
 Explain the 3 queue names (default, long, short) and when
 to use each
@@ -264,6 +413,29 @@ Time consuming tasks
 
 ### Eg:
 Payroll processing to employees, large report generation which works in n number of records
+
+### Task D - Job failure handling:
+
+### Que:
+Deliberately cause a background job to fail (raise an exception)
+
+### Ans:
+add this command in code where the fn exists , this will cause error purposefully
+
+raise Exception("Test failure")
+
+to check, type error log & rq we can find the record
+in title = status will be failed
+in rq = we can see the log that prints the Exception message
+
+### Que:
+Explain retry behavior: how many times does Frappe retry a failed background job by default?
+
+### Ans:
+3 times frappe retries failed bg job
+1 initial run, 2 retries
+
+then job will marked as failed permenantly and moves to RQ failed jobs
 ----------------------------------------------------------------------------------
 L1 - REST Resource API & Custom API
 
@@ -463,3 +635,42 @@ goto user => settings => api access => generate keys
 * api key will remain same where the secret gets changed 
 when we click generate keys
 * server to server communication
+----------------------------------------------------------------------------------
+### M1 - Server Script DocType
+
+### Que:
+What Python functions/modules are blocked in the Server Script sandbox?
+
+### Ans:
+Server script,
+    writing python in frappe ui directly
+Sandbox,
+    sand box means restricted environment, with safe limited operations
+
+server script is a doctype in frappe used to create python server scripts using UI, 
+Script types like,
+- Doctype Event
+- Scheduler Event
+- Permission Query
+- API
+we can select the doctype event too here,
+using script field we will send the python code, as this is restricted environment
+we can do only limited things
+
+Allowed:
+- frappe methods
+- db operations
+- basic python
+- safe utils like frappe.utils, date() etc
+
+Blocked:
+system/ OS => os, sys, subprocess
+file hadnling => open()
+dynamic execution => eval(), exec()
+mmodule => pandas, numpy 
+
+
+Defined:
+frappe/utils/safe_exec.py file
+
+### Que:
