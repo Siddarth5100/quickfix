@@ -6,17 +6,25 @@
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
- "filters": [],
+ "filters": [
+  {
+   "fieldname": "device_type",
+   "fieldtype": "Link",
+   "label": "Device Type",
+   "mandatory": 0,
+   "wildcard_filter": 0
+  }
+ ],
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": null,
- "modified": "2026-03-12 12:27:13.555576",
+ "modified": "2026-03-23 02:38:07.529188",
  "modified_by": "Administrator",
  "module": "Service Center",
  "name": "Job Card details",
  "owner": "Administrator",
  "prepared_report": 0,
- "query": "SELECT name, customer_name, device_type, status, assigned_technician, estimated_cost, creation\nFROM `tabJob Card`\nWHERE status NOT IN (\"Delivered\", \"Cancelled\");",
+ "query": "SELECT name, customer_name, device_type, status, assigned_technician, estimated_cost, creation\nFROM `tabJob Card`\nWHERE status NOT IN (\"Delivered\", \"Cancelled\")\nORDER BY creation DESC;",
  "ref_doctype": "Job Card",
  "report_name": "Job Card details",
  "report_type": "Query Report",

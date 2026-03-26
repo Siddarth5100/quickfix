@@ -1,0 +1,49 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"IfWxZnuHmY\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\" style=\\\"font-weight: normal;\\\"><i>QuickFix</i></span>\",\"col\":8}}]",
+ "creation": "2026-03-22 07:21:35.694675",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "idx": 0,
+ "indicator_color": "yellow",
+ "is_hidden": 0,
+ "label": "QuickFix",
+ "links": [],
+ "modified": "2026-03-26 05:51:07.185981",
+ "modified_by": "Administrator",
+ "module": "Service Center",
+ "name": "QuickFix",
+ "number_cards": [
+  {
+   "label": "Test",
+   "number_card_name": "Total Open Job Cards"
+  },
+  {
+   "number_card_name": "Today's Revenue"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 28.0,
+ "shortcuts": [
+  {
+   "doc_view": "Dashboard",
+   "label": "Job Card",
+   "link_to": "Job Card",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Device Type",
+   "link_to": "Device Type",
+   "type": "DocType"
+  }
+ ],
+ "title": "QuickFix"
+}

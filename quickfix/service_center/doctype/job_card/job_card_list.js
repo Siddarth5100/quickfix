@@ -1,4 +1,6 @@
 
+// Job Card list: color-coded get_indicator per status, formatters for final_amount, quick
+// action button for "In Repair" rows
 
 frappe.listview_settings["Job Card"] = {
 
@@ -10,7 +12,7 @@ frappe.listview_settings["Job Card"] = {
         final_amount(value) {
             // console.log(value)
             // console.log(doc.status)
-            return "₹ " + value;
+            return value ? "₹ " + value : "";
         }
     },
 
@@ -25,7 +27,7 @@ frappe.listview_settings["Job Card"] = {
         }
 
         if (doc.status == "Awaiting Customer Approval") {
-            return ["waiting Customer Approval", "yellow"]
+            return ["Awaiting Customer Approval", "yellow"]
         }
 
         if (doc.status == "In Repair") {
@@ -33,23 +35,21 @@ frappe.listview_settings["Job Card"] = {
         } 
 
         if (doc.status == "Ready For Delivery") {
-            console.log("Indicator running", doc.status, "blue---")
+            // console.log("Indicator running", doc.status, "blue---")
             return ["Ready For Delivery", "blue"]
         }   
         
         if (doc.status == "Delivered") {
-            cons.log("--------------Delivered", doc.status)
+            // console.log("--------------Delivered", doc.status)
             return ["Delivered", "green"] 
         }
 
         if (doc.status == "Cancelled") {
-            console.log("Indicator running", doc.status)
-            return ["Cancelled", "yellow"]
+            // console.log("Indicator running", doc.status)
+            return ["Cancelled", "red"]
         }
          
-    },
-
-    
+    },  
 
     button: {
         show(doc) {
@@ -62,7 +62,7 @@ frappe.listview_settings["Job Card"] = {
         },
         
         action(doc) {
-            console.log("clicked for:", doc.name)
+            frappe.msgprint("Repair completed for " + doc.name);
         },
 
         get_description(doc) {

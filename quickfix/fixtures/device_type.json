@@ -9,15 +9,6 @@
   "name": "Smart Phones"
  },
  {
-  "average_repair_hours": 3,
-  "description": "Based on the Company",
-  "device_type": "Laptop",
-  "docstatus": 0,
-  "doctype": "Device Type",
-  "modified": "2026-02-26 13:17:11.324530",
-  "name": "Laptop"
- },
- {
   "average_repair_hours": 1,
   "description": "Hours may vary based on the issue",
   "device_type": "Tablet",
@@ -25,5 +16,14 @@
   "doctype": "Device Type",
   "modified": "2026-02-26 13:18:04.431610",
   "name": "Tablet"
+ },
+ {
+  "average_repair_hours": 3,
+  "description": "Based on the Company",
+  "device_type": "Laptop",
+  "docstatus": 0,
+  "doctype": "Device Type",
+  "modified": "2026-02-26 13:17:11.324530",
+  "name": "Laptop"
  }
 ]

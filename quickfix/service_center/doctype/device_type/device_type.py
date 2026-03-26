@@ -8,37 +8,26 @@ from frappe.model.document import Document
 class DeviceType(Document):
 	pass
 
+# F2 - Install, Boot & Session Hook
+# want to check this
 def after_install():
-	# count = frappe.db.count('Device Type', 
-	# 	{'device_type':""}
-	# )
+	default_device_type = ['Tablet', 'Laptop', 'Smart Phones']
 
-	# if count < 3:
+	device_count = frappe.db.count('Device Type')
 
-	# 	name = frappe.db.exists('Device Type',
-	# 		{'name': }
-	# 	)
+	if device_count < 3:
+		for device in default_device_type:
+			if not frappe.db.exists('Device Type', device):
+				frappe.get_doc({
+					'doctype': 'Device Type',
+					'device_type': device
+				}).insert(ignore_permissions=True)	
+	
+	if not frappe.db.exists('Settings'):
+		frappe.get_doc({
+			'doctype': 'Settings',
+			'shop_name': 'QuickFix',
+			'default_labour_charge': 1000
+		}).insert(ignore_permissions=True)	
 
-	# 	if name:
-	# 		pass
-
-	# 	frappe.new_doc()
-
-	# device_types = ["Mac", "Tablet", "Laptop", "Smart Phones"]
-
-	# for device in device_types:
-	# 	device_exists = frappe.db.exists("Device Type",
-	# 		{
-	# 			"device_type": device
-	# 		}
-	# 	)
-
-	# 	if not device_exists:
-	# 		add_device = frappe.new_doc("Device Type")
-	# 		add_device.device_type = device
-	# 		if device == "Mac":
-	# 			add_device.description = "MAC repair"
-	# 			add_device.average_repair_hours = 2
-
-	# frappe.msgprint("--------------Device Type created successfully")
-		pass
+	frappe.msgprint("Default setup done")

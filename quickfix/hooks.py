@@ -1,9 +1,17 @@
+import frappe
+
 app_name = "quickfix"
 app_title = "Quickfix"
 app_publisher = "Siddarth"
 app_description = "Service Management system for mobile and laptop repair buisness"
 app_email = "siddarth@gmail.com"
 app_license = "mit"
+
+'''
+# Task B - Multiple handler conflict:
+def jobcard_validate_doc_events(doc,method):
+    frappe.msgprint("Handler 2 (doc_events) ran")
+'''
 
 fixtures = [
     
@@ -20,9 +28,30 @@ fixtures = [
         ]
     },
 
+    # Export permission
     {
         "doctype": "Custom DocPerm",
 
+    },
+
+    # custom field
+    {
+        "doctype": "Custom Field"
+    },
+
+    # property setter
+    {
+        "doctype": "Property Setter"
+    },
+
+    # workspace
+    {
+        "doctype": "Workspace"
+    },
+
+    # settings (single table)
+    {
+        "doctype": "Settings",
     }
 ]
 
@@ -49,14 +78,16 @@ fixtures = [
 # app_include_css = "/assets/quickfix/css/quickfix.css"
 # app_include_js = "/assets/quickfix/js/quickfix.js"
 
-
 # include js, css files in header of desk.html
+app_include_html = "quickfix/templates/includes/shop_name.html"
 app_include_css = "/assets/quickfix/css/quickfix.css"
 app_include_js = "/assets/quickfix/js/quickfix.js"
+
 doctype_js = {
-    "Job Card": "public/js/job_card"
+    "Job Card": "public/js/job_card.js"
 }
-docty_list_js = {
+
+doctype_list_js = {
     "Job Card": "public/js/job_card_list.js"
 }
 
@@ -111,15 +142,20 @@ docty_list_js = {
 # 	"filters": "quickfix.utils.jinja_filters"
 # }
 
-def get_weather():
-    return "Hello"
-
-def get_filters(text):
-    return text.upper()
+# jinja = {
+#     "methods": {
+#         "get_shop_name":"quickfix.service_center.doctype.settings.settings.get_shop_name"
+#     }
+# }
 
 jinja = {
-	"methods": "quickfix.hooks.get_weather",
-    "filters": "quickfix.hooks.get_filters"
+    "methods": [
+        "quickfix.service_center.doctype.settings.settings.get_shop_name"
+    ],
+    
+    "filters": [
+        "quickfix.service_center.doctype.settings.settings.prefix"
+    ]
 }
 
 # Installation
@@ -127,14 +163,17 @@ jinja = {
 
 # before_install = "quickfix.install.before_install"
 # after_install = "quickfix.install.after_install"
-after_install = "quickfix.service_center.doctype.device_type.device_type.after_install"
+after_install = [
+    "quickfix.service_center.doctype.device_type.device_type.after_install",
+    "quickfix.service_center.doctype.job_card.job_card.after_install"
+]
 
 # Uninstallation
 # ------------
 
 # before_uninstall = "quickfix.uninstall.before_uninstall"
-before_uninstall = "quickfix.service_center.doctype.job_card.job_card.before_uninstall"
 # after_uninstall = "quickfix.uninstall.after_uninstall"
+before_uninstall = "quickfix.service_center.doctype.job_card.job_card.before_uninstall"
 
 # Integration Setup
 # ------------------
@@ -182,6 +221,11 @@ override_doctype_class = {
 	"Job Card": "quickfix.overrides.custom_job_card.CustomJobCard"
 }
 
+# F4 - override_whitelisted_methods Hook
+override_whitelisted_methods = {
+    "frappe.client.get_count": "quickfix.api.custom_get_count"
+}
+
 # Document Events
 # ---------------
 # Hook on document methods and events
@@ -194,29 +238,20 @@ override_doctype_class = {
 # 	}
 # }
 
-
-
-# doc_events = {
-	# "*": {
-	# 	"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
-    #     "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
-    #     "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
-	# },
-
-    # "Job Card": {
-        # "validate": "quickfix.service_center.doctype.job_card.job_card.controller_test"
-    # },
-
-    # "*": {
-    #     "validate": "quickfix.service_center.doctype.job_card.job_card.wildcard_validate"
-    # },
-
-    # "Job Card": {
-    #     "validate": "quickfix.service_center.doctype.job_card.job_card.jobcard_validate"
-    # }
-# }
-
-
+doc_events = {
+	"*": {
+		"on_update": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+        "on_submit": "quickfix.service_center.doctype.audit_log.audit_log.log_change",
+        "on_cancel": "quickfix.service_center.doctype.audit_log.audit_log.log_change"
+    },
+   
+    "Job Card": {
+        "validate": [
+            # "quickfix.service_center.doctype.job_card.job_card.jobcard_validate",
+            # "quickfix.hooks.jobcard_validate_doc_events"
+        ]
+    }
+}
 
 # Scheduled Tasks
 # ---------------
@@ -238,6 +273,17 @@ override_doctype_class = {
 # 		"quickfix.tasks.monthly"
 # 	],
 # }
+
+scheduler_events = {
+	"daily": [
+		"quickfix.utils.low_stock"
+	],
+    "cron": {
+        "0 2 1 * *": [
+            "quickfix.utils.generate_monthly_revenue_report"
+        ] 
+    }
+}
 
 # Testing
 # -------
@@ -320,9 +366,7 @@ override_doctype_class = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+extend_bootinfo = "quickfix.utils.extend_bootinfo"
 
-
-website_route_rules = [
-	{"from_route": "/sid", "to_route": ""},
-
-]
+# log_user_session = "quickfix.service_center.doctype.audit_log.audit_log.log_user_session"
+# on_logout = "quickfix.service_center.doctype.audit_log.audit_log.log_user_session"

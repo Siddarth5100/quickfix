@@ -34,6 +34,24 @@ mit
 ### -------------------------------QuickFix-------------------------------
 ### Multi-site & Configuration
 
+### Que:
+Create TWO sites on the same bench: quickfix-dev.localhost and
+quickfix-prod.localhost
+
+### Ans:
+- activate venv where the bench installed (source venv_310/bin/activate)
+- goto bench folder cd v15-bench, use below commands to create site
+
+- bench new-site quickfix-dev.localhost
+- bench new-site quickfix-prod.localhost
+
+- bench --site quickfix-dev.localhost install-app quickfix
+- bench --site quickfix-prod.localhost install-app quickfix
+
+- goto sites folder, open quickfix-dev.localhost, site_config.json
+- type/add  "developer_mode": true
+- save & exit
+
 ### Que: 
 Explain in 4 sentences: what each config file is for and what breaks if you accidentally put a secret in common_site_config.json
 

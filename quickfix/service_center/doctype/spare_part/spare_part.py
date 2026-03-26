@@ -20,5 +20,6 @@ class SparePart(Document):
 		if not self.part_code:
 			frappe.throw("Part code is empty!")
 
+		# upper_case part_code
 		self.part_code= self.part_code.upper()
 		
